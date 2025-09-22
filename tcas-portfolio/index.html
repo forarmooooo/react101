@@ -1,0 +1,709 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TCAS69 Portfolio</title>
+  <style>
+    :root{
+      /* Content-first light theme */
+      --bg:#f6f8fb;
+      --panel:#ffffff;
+      --text:#1b2638;
+      --muted:#52627e;
+      --border:#d8e0ec;
+      --panel-2:#fafbfe;
+
+      --primary:#345bdb;   /* headings/links */
+      --primary-2:#5a73e6; /* hover */
+      --accent:#1a9d83;    /* badges/highlights */
+      --danger:#d4445b;
+
+      --chip:#eef2fb;
+      --shadow: 0 4px 18px rgba(22,34,58,.08), 0 1px 0 rgba(22,34,58,.04);
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; font: 15px/1.55 ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, "Noto Sans Thai", "Noto Sans", Arial, Helvetica, sans-serif;
+      color:var(--text); background:var(--bg);
+    }
+
+    header{ position:sticky; top:0; z-index:20; background:#ffffffeb; border-bottom:1px solid var(--border); backdrop-filter: saturate(120%) blur(4px) }
+    .container{ width:min(1200px, 94vw); margin-inline:auto }
+
+    .brand{ display:flex; align-items:center; gap:.8rem; padding:.85rem 0 }
+    .brand h1{ font-size:1.1rem; margin:0; letter-spacing:.2px; color:var(--primary) }
+    .brand .badge{ font-size:.75rem; color:#4a5a77; border:1px solid var(--border); padding:.1rem .45rem; border-radius:999px; background:var(--panel-2) }
+
+    nav{ display:flex; gap:.5rem; padding: .4rem 0 .9rem; flex-wrap: wrap }
+    nav a{ text-decoration:none; color:#42526b; border:1px solid var(--border); background:#fff; padding:.5rem .75rem; border-radius:.5rem; transition:.2s ease }
+    nav a:hover{ color:var(--primary-2); border-color:#c7d3ea }
+    nav a.active{ color:#fff; background:var(--primary); border-color:var(--primary) }
+
+    main{ padding:1.4rem 0 2.6rem }
+
+    .panel{ background:var(--panel); border:1px solid var(--border); border-radius:.75rem; box-shadow:var(--shadow); padding:1rem }
+    .panel h2{ margin:.1rem 0 .6rem; font-size:1.2rem; color:#0e264d }
+
+    .muted{ color:var(--muted) }
+
+    .grid{ display:grid; gap:.9rem }
+    @media (min-width: 980px){
+      .grid-2{ grid-template-columns: 1fr 1fr }
+      .grid-3{ grid-template-columns: repeat(3, 1fr) }
+    }
+
+    label{ display:block; font-weight:600; margin:.1rem 0 .35rem }
+    input[type="text"], input[type="tel"], input[type="number"], textarea, select{
+      width:100%; color:#0f1f3b; background:#fff; border:1px solid #cfd9ea; border-radius:.5rem; padding:.55rem .65rem; outline:none; transition:.2s; font-size:.95rem
+    }
+    input:focus, textarea:focus, select:focus{ border-color:#9eb3e9; box-shadow:0 0 0 3px rgba(52,91,219,.12) }
+    textarea{ min-height:88px; resize:vertical }
+
+    .help{ font-size:.85rem; color:#6a7c99 }
+    .error{ font-size:.85rem; color:var(--danger); display:none }
+    .invalid input, .invalid textarea, .invalid select{ border-color: var(--danger) }
+    .invalid .error{ display:block }
+
+    .actions{ display:flex; gap:.5rem; justify-content:flex-end; flex-wrap:wrap; margin-top:.4rem }
+    .btn{ border:1px solid var(--border); background:#fff; color:#10203f; padding:.5rem .75rem; border-radius:.5rem; cursor:pointer; transition:.2s; position:relative; overflow:hidden }
+    .btn:hover{ border-color:#c7d3ea; color:#0e264d }
+    .btn.primary{ background:var(--primary); color:#fff; border-color:var(--primary) }
+    .btn.primary:hover{ background:var(--primary-2); border-color:var(--primary-2) }
+    .btn.warn{ background:#ffe8ec; color:#6c1020; border-color:#ffccd5 }
+
+    .btn-toggle-group{ display:inline-flex; border:1px solid var(--border); border-radius:.5rem; overflow:hidden; background:#fff }
+    .btn.toggle{ border:none; border-right:1px solid var(--border); background:#fff; padding:.48rem .7rem; color:#324461 }
+    .btn.toggle:last-child{ border-right:none }
+    .btn.toggle.active{ background:var(--primary); color:#fff }
+
+    .table-tools{ display:flex; gap:.6rem; flex-wrap:wrap; align-items:flex-end }
+    .tool-group{ display:flex; gap:.4rem; flex-wrap:wrap }
+
+    .table-wrap{ overflow:auto; border-radius:.6rem; border:1px solid var(--border); background:#fff }
+    table{ width:100%; border-collapse:separate; border-spacing:0; min-width:960px; font-size:.95rem }
+    thead th{ position:sticky; top:0; background:#f3f6fc; color:#213150; font-weight:700; text-align:left; padding:.55rem .65rem; border-bottom:1px solid var(--border); white-space:nowrap }
+    tbody td{ padding:.5rem .65rem; border-bottom:1px solid #eef2fb; vertical-align:top }
+    tbody tr:nth-child(even){ background:#fbfcff }
+    tbody tr:hover{ background:#f0f5ff }
+    th.sortable{ cursor:pointer; user-select:none }
+    th.sortable .arrow{ opacity:.7; margin-left:.35rem; font-size:.9em }
+    th.sortable.active{ color:#0e264d }
+
+    tr.expand-row td{ background:#f9fbff; border-top:1px dashed #e4ebfa }
+    .expand-cell{ padding:.7rem .8rem }
+
+    .chip{ display:inline-flex; align-items:center; gap:.35rem; background:var(--chip); border:1px solid #dde6fb; color:#19305c; padding:.18rem .45rem; border-radius:999px; font-size:.8rem }
+    mark{ background:#fff3a8; color:inherit; padding:0 .15rem; border-radius:.2rem }
+
+    .stats{ display:grid; grid-template-columns: repeat(3, minmax(200px, 1fr)); gap:.6rem }
+    .stat{ background:#fff; border:1px solid var(--border); border-radius:.6rem; padding:.6rem .75rem }
+    .stat .k{ font-weight:800; font-size:1.1rem; color:#0e264d }
+    .stat .l{ color:#5a6f92; font-size:.9rem }
+
+    .thumbs{ display:flex; gap:.4rem; flex-wrap:wrap }
+    .thumb{ width:72px; height:72px; border:1px solid var(--border); border-radius:.4rem; overflow:hidden; background:#f1f4fb; display:grid; place-items:center }
+    .thumb img{ width:100%; height:100%; object-fit:cover }
+
+    /* Card view */
+    .card-grid{ display:grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap:.75rem }
+    .card{ background:#fff; border:1px solid var(--border); border-radius:.6rem; box-shadow:var(--shadow); padding:.65rem }
+    .card .head{ display:flex; gap:.6rem; align-items:center }
+    .avatar{ width:46px; height:46px; border-radius:.4rem; overflow:hidden; background:#eef2fb; border:1px solid var(--border); display:grid; place-items:center; font-size:.8rem; color:#6a7c99 }
+    .avatar img{ width:100%; height:100%; object-fit:cover }
+    .meta{ color:#5a6f92; font-size:.9rem }
+
+    .gpa-bar{ height:8px; background:#eef2fb; border:1px solid #dfe7fb; border-radius:999px; overflow:hidden }
+    .gpa-bar .fill{ height:100%; background:linear-gradient(90deg, #76d8c1, #5a73e6); width:0% }
+
+    footer{ color:#51627b; font-size:.85rem; border-top:1px solid var(--border); padding:1rem 0; background:#fff }
+    .right{ text-align:right }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <div class="brand">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M12 2l8 4.5v9L12 20.5 4 15.5v-9L12 2z" stroke="#345bdb" stroke-width="1.2" fill="#eaf0ff"/>
+          <path d="M12 7l4 2.2v4.6L12 16l-4-2.2V9.2L12 7z" stroke="#1a9d83" stroke-width="1.2" fill="#e6fff9"/>
+        </svg>
+        <h1>TCAS69 Portfolio</h1>
+        <span class="badge">Demo App</span>
+      </div>
+      <nav>
+        <a href="#/form" id="nav-form">เพิ่ม Portfolio</a>
+        <a href="#/admin" id="nav-admin">สำหรับอาจารย์ (รายชื่อ)</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- FORM VIEW -->
+    <section id="view-form" class="view">
+      <div class="panel">
+        <h2>แบบฟอร์ม Portfolio สำหรับสมัคร TCAS69</h2>
+        <p class="muted">กรอกข้อมูลให้ครบถ้วน พร้อมอัปโหลดรูปภาพที่เกี่ยวข้อง ระบบจะตรวจสอบความถูกต้องก่อนบันทึก และจัดเก็บข้อมูลลงใน Store (LocalStorage)</p>
+        <form id="portfolio-form" novalidate>
+          <div class="grid grid-2">
+            <div>
+              <label for="firstName">ชื่อ</label>
+              <input id="firstName" name="firstName" type="text" required placeholder="ชื่อจริง" />
+              <div class="help">จำเป็นต้องระบุ</div>
+              <div class="error">กรุณากรอกชื่อ</div>
+            </div>
+            <div>
+              <label for="lastName">นามสกุล</label>
+              <input id="lastName" name="lastName" type="text" required placeholder="นามสกุล" />
+              <div class="help">จำเป็นต้องระบุ</div>
+              <div class="error">กรุณากรอกนามสกุล</div>
+            </div>
+            <div>
+              <label for="phone">หมายเลขโทรศัพท์</label>
+              <input id="phone" name="phone" type="tel" required placeholder="0xxxxxxxxx" pattern="^0\d{8,9}$" />
+              <div class="help">รูปแบบตัวอย่าง: 0xxxxxxxxx (9-10 หลัก)</div>
+              <div class="error">กรุณากรอกหมายเลขโทรศัพท์ให้ถูกต้อง</div>
+            </div>
+            <div>
+              <label for="school">โรงเรียน</label>
+              <input id="school" name="school" type="text" required placeholder="ชื่อโรงเรียน" />
+              <div class="help">จำเป็นต้องระบุ</div>
+              <div class="error">กรุณากรอกชื่อโรงเรียน</div>
+            </div>
+            <div>
+              <label for="gpa">GPA</label>
+              <input id="gpa" name="gpa" type="number" step="0.01" min="0" max="4" required placeholder="เช่น 3.45" />
+              <div class="help">ค่าระหว่าง 0.00 ถึง 4.00</div>
+              <div class="error">กรุณากรอก GPA ระหว่าง 0.00 - 4.00</div>
+            </div>
+            <div>
+              <label for="major">สาขาที่เลือก</label>
+              <input id="major" name="major" type="text" required placeholder="เช่น วิศวกรรมคอมพิวเตอร์" />
+              <div class="help">จำเป็นต้องระบุ</div>
+              <div class="error">กรุณากรอกสาขาที่เลือก</div>
+            </div>
+            <div>
+              <label for="university">มหาวิทยาลัย</label>
+              <input id="university" name="university" type="text" required placeholder="เช่น มหาวิทยาลัยธรรมศาสตร์" />
+              <div class="help">จำเป็นต้องระบุ</div>
+              <div class="error">กรุณากรอกมหาวิทยาลัย</div>
+            </div>
+            <div>
+              <label for="address">ที่อยู่</label>
+              <textarea id="address" name="address" required placeholder="บ้านเลขที่ ถนน ตำบล/แขวง อำเภอ/เขต จังหวัด รหัสไปรษณีย์"></textarea>
+              <div class="error">กรุณากรอกที่อยู่</div>
+            </div>
+            <div class="grid-col-span">
+              <label for="skills">ความสามารถพิเศษ</label>
+              <textarea id="skills" name="skills" placeholder="ดนตรี กีฬา เขียนโปรแกรม ภาษาต่างประเทศ ฯลฯ"></textarea>
+            </div>
+            <div class="grid-col-span">
+              <label for="motivation">เหตุผลในการสมัครเข้าเรียน</label>
+              <textarea id="motivation" name="motivation" required placeholder="อธิบายแรงบันดาลใจและเป้าหมาย"></textarea>
+              <div class="error">กรุณาเขียนเหตุผลในการสมัคร</div>
+            </div>
+          </div>
+
+          <hr style="border:none;border-top:1px solid var(--border); margin:.8rem 0" />
+
+          <div class="grid grid-2">
+            <div>
+              <label for="photo">รูปภาพนักเรียน</label>
+              <input id="photo" name="photo" type="file" accept="image/*" />
+              <div class="help">ไฟล์ภาพ .jpg .png .webp แนะนำขนาดไม่เกิน ~2MB</div>
+              <div class="thumbs" id="photoPreview"></div>
+            </div>
+            <div>
+              <label for="activities">กิจกรรม (อัปโหลดได้หลายไฟล์)</label>
+              <input id="activities" name="activities" type="file" accept="image/*" multiple />
+              <div class="help">อัปโหลดรูปกิจกรรมต่าง ๆ ที่เคยเข้าร่วม</div>
+              <div class="thumbs" id="activitiesPreview"></div>
+            </div>
+            <div>
+              <label for="awards">รางวัล (อัปโหลดได้หลายไฟล์)</label>
+              <input id="awards" name="awards" type="file" accept="image/*" multiple />
+              <div class="help">อัปโหลดภาพรางวัล เกียรติบัตร</div>
+              <div class="thumbs" id="awardsPreview"></div>
+            </div>
+            <div>
+              <label for="works">ผลงาน (อัปโหลดได้หลายไฟล์)</label>
+              <input id="works" name="works" type="file" accept="image/*" multiple />
+              <div class="help">เช่น โปสเตอร์ โครงงาน โปรแกรม ฯลฯ</div>
+              <div class="thumbs" id="worksPreview"></div>
+            </div>
+          </div>
+
+          <div class="actions">
+            <button type="reset" class="btn">ล้างฟอร์ม</button>
+            <button type="submit" class="btn primary">บันทึก Portfolio</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- ADMIN VIEW -->
+    <section id="view-admin" class="view" hidden>
+      <div class="panel">
+        <div class="grid">
+          <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:1rem;flex-wrap:wrap">
+            <div>
+              <h2>รายชื่อนักเรียนที่สมัคร</h2>
+              <div class="muted" id="admin-summary">รวม 0 รายการ</div>
+            </div>
+            <div class="tool-group" style="align-items:end">
+              <div class="btn-toggle-group" id="viewToggle">
+                <button class="btn toggle active" data-mode="table">ตาราง</button>
+                <button class="btn toggle" data-mode="card">การ์ด</button>
+              </div>
+              <button class="btn" id="seedBtn" title="เพิ่มข้อมูลตัวอย่าง">เพิ่มตัวอย่าง</button>
+              <button class="btn warn" id="clearBtn">ล้างข้อมูลทั้งหมด</button>
+            </div>
+          </div>
+
+          <div class="stats" id="stats">
+            <div class="stat"><div class="k" id="stat-total">0</div><div class="l">จำนวนผู้สมัคร</div></div>
+            <div class="stat"><div class="k" id="stat-avg">0.00</div><div class="l">GPA เฉลี่ย</div></div>
+            <div class="stat"><div class="k" id="stat-top">0.00</div><div class="l">GPA สูงสุด</div></div>
+          </div>
+
+          <div class="table-tools">
+            <div>
+              <label for="q" class="muted">ค้นหา</label>
+              <input id="q" type="text" placeholder="ชื่อ, โรงเรียน, สาขา, มหาวิทยาลัย" />
+            </div>
+            <div>
+              <label for="filterUni" class="muted">มหาวิทยาลัย</label>
+              <select id="filterUni"><option value="">ทั้งหมด</option></select>
+            </div>
+            <div>
+              <label for="filterMajor" class="muted">สาขา</label>
+              <select id="filterMajor"><option value="">ทั้งหมด</option></select>
+            </div>
+            <div>
+              <label class="muted">ช่วง GPA</label>
+              <div style="display:flex;gap:.35rem">
+                <input id="gpaMin" type="number" step="0.01" min="0" max="4" placeholder="ต่ำสุด" style="width:110px"/>
+                <input id="gpaMax" type="number" step="0.01" min="0" max="4" placeholder="สูงสุด" style="width:110px"/>
+              </div>
+            </div>
+            <div style="align-self:end">
+              <button class="btn" id="resetFilters">รีเซ็ตตัวกรอง</button>
+            </div>
+          </div>
+
+          <div class="table-wrap" id="tableWrap">
+            <table id="studentsTable" aria-describedby="admin-summary">
+              <thead>
+                <tr>
+                  <th>โปรไฟล์</th>
+                  <th class="sortable" data-col="name">ชื่อ-นามสกุล <span class="arrow">⇅</span></th>
+                  <th class="sortable" data-col="school">โรงเรียน <span class="arrow">⇅</span></th>
+                  <th class="sortable" data-col="phone">โทร <span class="arrow">⇅</span></th>
+                  <th class="sortable" data-col="gpa">GPA <span class="arrow">⇅</span></th>
+                  <th class="sortable" data-col="major">สาขาที่เลือก <span class="arrow">⇅</span></th>
+                  <th class="sortable" data-col="university">มหาวิทยาลัย <span class="arrow">⇅</span></th>
+                  <th class="sortable" data-col="createdAt">ส่งเมื่อ <span class="arrow">⇅</span></th>
+                  <th>เพิ่มเติม</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+
+          <div id="cardsWrap" class="card-grid" style="display:none"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- DETAIL VIEW -->
+    <section id="view-detail" class="view" hidden>
+      <div class="panel">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:.6rem;flex-wrap:wrap">
+          <h2 style="margin:.2rem 0">รายละเอียดนักศึกษา</h2>
+          <a class="btn" href="#/admin">← กลับหน้ารายชื่อ</a>
+        </div>
+        <div id="detailContent" class="grid" style="margin-top:.6rem; gap:1rem"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container" style="display:flex;justify-content:space-between;gap:.6rem;flex-wrap:wrap">
+      <div>Assignment: แบบฟอร์ม Portfolio TCAS69 — Store (LocalStorage), ตาราง/การ์ด, เรียงลำดับ, ค้นหา/กรอง, รูปภาพ/แกลเลอรี, สถิติ</div>
+      <div class="right">Build: Vanilla HTML/CSS/JS</div>
+    </div>
+  </footer>
+
+  <script>
+    // ------------ Simple Store (LocalStorage) ------------
+    const STORE_KEY = 'tcasPortfolioEntries';
+    const Store = {
+      load(){ try { return JSON.parse(localStorage.getItem(STORE_KEY) || '[]') } catch { return [] } },
+      save(list){ localStorage.setItem(STORE_KEY, JSON.stringify(list)) },
+      add(entry){ const list = this.load(); list.push(entry); this.save(list); return entry },
+      clear(){ this.save([]) }
+    };
+
+    // ------------- Utilities -------------
+    const qs = (sel, el=document) => el.querySelector(sel);
+    const qsa = (sel, el=document) => Array.from(el.querySelectorAll(sel));
+
+    function uuid(){ if (crypto?.randomUUID) return crypto.randomUUID(); return 'id-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2,8); }
+    function sanitizeStr(v){ return (v||'').toString().trim() }
+    function toFixedGPA(v){ const n = Number(v); return Number.isFinite(n) ? n.toFixed(2) : '' }
+    function formatNewlines(s){ return sanitizeStr(s).replace(/\n/g, '<br/>') }
+
+    function escapeHtml(s){ return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c])) }
+    function highlight(text, q){ if(!q) return escapeHtml(String(text||'')); const re = new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi'); return escapeHtml(String(text||'')).replace(re, m=>`<mark>${m}</mark>`); }
+
+    async function filesToDataUrls(fileList, limit=20){
+      const files = Array.from(fileList || []).slice(0, limit);
+      const mapped = await Promise.all(files.map(file => new Promise((resolve) => {
+        const reader = new FileReader(); reader.onload = () => resolve({ name: file.name, dataUrl: reader.result }); reader.onerror = () => resolve(null); reader.readAsDataURL(file);
+      })));
+      return mapped.filter(Boolean);
+    }
+
+    // ------------- Form Handling -------------
+    const formEl = document.getElementById('portfolio-form');
+    const previews = {
+      photo: document.getElementById('photoPreview'),
+      activities: document.getElementById('activitiesPreview'),
+      awards: document.getElementById('awardsPreview'),
+      works: document.getElementById('worksPreview'),
+    };
+
+    ['photo','activities','awards','works'].forEach(key => {
+      const input = document.getElementById(key);
+      input?.addEventListener('change', async (e) => {
+        const files = key === 'photo' ? (e.target.files?.[0] ? [e.target.files[0]] : []) : e.target.files;
+        const data = await filesToDataUrls(files, key==='photo'?1:20);
+        const c = previews[key]; c.innerHTML = '';
+        data.forEach(it => { const div = document.createElement('div'); div.className = 'thumb'; const img = document.createElement('img'); img.alt = it.name || 'image'; img.src = it.dataUrl || it; div.appendChild(img); c.appendChild(div); });
+      });
+    });
+
+    qsa('input, textarea, select', formEl).forEach(el => {
+      el.addEventListener('input', () => { const wrap = el.closest('div'); if(!wrap) return; if(el.checkValidity()) wrap.classList.remove('invalid'); })
+    });
+
+    formEl.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      let hasError = false;
+      qsa('input[required], textarea[required], select[required]', formEl).forEach(el => { const wrap = el.closest('div'); if(!el.checkValidity()){ wrap?.classList.add('invalid'); hasError = true } else { wrap?.classList.remove('invalid') } });
+      const gpaEl = document.getElementById('gpa'); const gpa = Number(gpaEl.value);
+      if (!Number.isFinite(gpa) || gpa < 0 || gpa > 4){ gpaEl.closest('div')?.classList.add('invalid'); hasError = true }
+      if(hasError){ formEl.scrollIntoView({behavior:'smooth', block:'start'}); return; }
+
+      const entry = {
+        id: uuid(), createdAt: Date.now(),
+        firstName: sanitizeStr(formEl.firstName.value), lastName: sanitizeStr(formEl.lastName.value),
+        phone: sanitizeStr(formEl.phone.value), address: sanitizeStr(formEl.address.value),
+        school: sanitizeStr(formEl.school.value), gpa: Number(formEl.gpa.value),
+        major: sanitizeStr(formEl.major.value), university: sanitizeStr(formEl.university.value),
+        skills: sanitizeStr(formEl.skills.value), motivation: sanitizeStr(formEl.motivation.value),
+        media: { photo:null, activities:[], awards:[], works:[] }
+      };
+
+      const [photo, activities, awards, works] = await Promise.all([
+        filesToDataUrls(formEl.photo.files, 1),
+        filesToDataUrls(formEl.activities.files, 40),
+        filesToDataUrls(formEl.awards.files, 40),
+        filesToDataUrls(formEl.works.files, 40),
+      ]);
+
+      entry.media.photo = photo?.[0] || null; entry.media.activities = activities || []; entry.media.awards = awards || []; entry.media.works = works || [];
+      Store.add(entry);
+
+      formEl.reset(); Object.values(previews).forEach(el => el && (el.innerHTML=''));
+      location.hash = '#/admin';
+    });
+
+    // ------------- Admin (List + Sort + Filter + Stats + View modes) -------------
+    const tableEl = document.getElementById('studentsTable');
+    const tbodyEl = tableEl.querySelector('tbody');
+    const tableWrap = document.getElementById('tableWrap');
+    const cardsWrap = document.getElementById('cardsWrap');
+    const adminSummaryEl = document.getElementById('admin-summary');
+
+    const statTotalEl = document.getElementById('stat-total');
+    const statAvgEl = document.getElementById('stat-avg');
+    const statTopEl = document.getElementById('stat-top');
+
+    const filter = { q:'', uni:'', major:'', gpaMin:'', gpaMax:'' };
+    const sortState = { col:'createdAt', dir:'desc' };
+    let viewMode = 'table';
+
+    const qInput = document.getElementById('q');
+    const uniSel = document.getElementById('filterUni');
+    const majorSel = document.getElementById('filterMajor');
+    const gpaMinInput = document.getElementById('gpaMin');
+    const gpaMaxInput = document.getElementById('gpaMax');
+    const resetFiltersBtn = document.getElementById('resetFilters');
+
+    function setSort(col){ if(sortState.col === col){ sortState.dir = sortState.dir === 'asc' ? 'desc' : 'asc' } else { sortState.col = col; sortState.dir = (col==='gpa' || col==='createdAt' || col==='phone') ? 'desc':'asc' } }
+
+    function withSort(list){
+      const arr = [...list]; const {col, dir} = sortState; const mul = dir === 'asc' ? 1 : -1;
+      arr.sort((a,b)=>{
+        let va, vb;
+        if(col==='name'){ va = (a.firstName+' '+a.lastName).toLowerCase(); vb = (b.firstName+' '+b.lastName).toLowerCase(); }
+        else if(col==='school'){ va = (a.school||'').toLowerCase(); vb = (b.school||'').toLowerCase(); }
+        else if(col==='phone'){ va = (a.phone||'').toLowerCase(); vb = (b.phone||'').toLowerCase(); }
+        else if(col==='gpa'){ va = a.gpa; vb = b.gpa }
+        else if(col==='major'){ va = (a.major||'').toLowerCase(); vb = (b.major||'').toLowerCase(); }
+        else if(col==='university'){ va = (a.university||'').toLowerCase(); vb = (b.university||'').toLowerCase(); }
+        else if(col==='createdAt'){ va = a.createdAt; vb = b.createdAt }
+        else { va = 0; vb = 0 }
+        if(va < vb) return -1*mul; if(va > vb) return 1*mul; return 0;
+      });
+      return arr;
+    }
+
+    function withFilter(list){
+      return list.filter(it => {
+        const q = filter.q.trim().toLowerCase();
+        if(q){ const hay = `${it.firstName} ${it.lastName} ${it.school} ${it.major} ${it.university}`.toLowerCase(); if(!hay.includes(q)) return false }
+        if(filter.uni && it.university !== filter.uni) return false;
+        if(filter.major && it.major !== filter.major) return false;
+        const gmin = parseFloat(filter.gpaMin); const gmax = parseFloat(filter.gpaMax);
+        if(!Number.isNaN(gmin) && it.gpa < gmin) return false;
+        if(!Number.isNaN(gmax) && it.gpa > gmax) return false;
+        return true;
+      });
+    }
+
+    function computeStats(list){
+      const total = list.length; const avg = total? (list.reduce((s,x)=>s+(Number(x.gpa)||0),0)/total):0; const top = total? Math.max(...list.map(x=>Number(x.gpa)||0)):0;
+      statTotalEl.textContent = total; statAvgEl.textContent = avg.toFixed(2); statTopEl.textContent = top.toFixed(2);
+    }
+
+    function timeFmt(ts){ try{ const d = new Date(ts); return d.toLocaleString('th-TH', {dateStyle:'medium', timeStyle:'short'}); }catch{ return '-' } }
+
+    function renderFilterOptions(list){
+      const unis = Array.from(new Set(list.map(x=>x.university).filter(Boolean))).sort((a,b)=>a.localeCompare(b));
+      const majors = Array.from(new Set(list.map(x=>x.major).filter(Boolean))).sort((a,b)=>a.localeCompare(b));
+      uniSel.innerHTML = '<option value="">ทั้งหมด</option>' + unis.map(u=>`<option value="${u}">${u}</option>`).join('');
+      majorSel.innerHTML = '<option value="">ทั้งหมด</option>' + majors.map(m=>`<option value="${m}">${m}</option>`).join('');
+      if(filter.uni) uniSel.value = filter.uni; if(filter.major) majorSel.value = filter.major;
+    }
+
+    function rowExpandHtml(item){
+      const skills = item.skills ? `<div><strong>ลักษณะ:</strong> <span class="muted">${formatNewlines(item.skills)}</span></div>` : '';
+      const mot = item.motivation ? `<div><strong>เหตุผล:</strong> <span class="muted">${formatNewlines(item.motivation)}</span></div>` : '';
+      const pics = (item.media?.activities||[]).slice(0,4).map((m,i)=>`<span class="thumb" style="width:64px;height:64px"><img alt="กิจกรรม ${i+1}" src="${m.dataUrl}"></span>`).join('');
+      return `<div class="expand-cell">
+        <div class="grid" style="gap:.4rem">
+          ${skills}
+          ${mot}
+          <div><strong>กิจกรรมล่าสุด:</strong> ${pics || '<span class="muted">-</span>'}</div>
+        </div>
+      </div>`;
+    }
+
+    function renderTable(sorted, allFiltered){
+      tbodyEl.innerHTML = sorted.map(item => `
+        <tr data-id="${item.id}">
+          <td>${item.media?.photo?.dataUrl ? `<span class="thumb" style="width:36px;height:36px"><img alt="${item.firstName}" src="${item.media.photo.dataUrl}"></span>` : '-'}</td>
+          <td><strong>${highlight(item.firstName+' '+item.lastName, filter.q)}</strong></td>
+          <td>${highlight(item.school||'-', filter.q)}</td>
+          <td>${item.phone||'-'}</td>
+          <td><span class="chip">${toFixedGPA(item.gpa)}</span></td>
+          <td>${highlight(item.major||'-', filter.q)}</td>
+          <td>${highlight(item.university||'-', filter.q)}</td>
+          <td>${timeFmt(item.createdAt)}</td>
+          <td>
+            <button class="btn" data-action="expand" data-id="${item.id}">ดูเพิ่ม</button>
+            <a class="btn" href="#/detail/${item.id}">รายละเอียด</a>
+          </td>
+        </tr>
+      `).join('');
+
+      // header sort indicators
+      qsa('th.sortable', tableEl).forEach(th => {
+        th.classList.toggle('active', th.dataset.col === sortState.col);
+        const arrow = qs('.arrow', th); if(arrow){ arrow.textContent = th.dataset.col === sortState.col ? (sortState.dir==='asc'?'↑':'↓') : '⇅'; }
+      });
+
+      // expand handler
+      tbodyEl.addEventListener('click', (e) => {
+        const btn = e.target.closest('button[data-action="expand"]'); if(!btn) return;
+        const id = btn.dataset.id; const tr = btn.closest('tr');
+        const open = tbodyEl.querySelector('tr.expand-row');
+        if(open){ open.previousSibling?.classList?.remove('open'); open.remove(); }
+        if(tr && !tr.classList.contains('open')){
+          const all = Store.load(); const item = all.find(x=>x.id===id); if(!item) return;
+          tr.classList.add('open');
+          const exp = document.createElement('tr'); exp.className='expand-row';
+          const td = document.createElement('td'); td.colSpan = 9; td.innerHTML = rowExpandHtml(item);
+          exp.appendChild(td);
+          tr.after(exp);
+        }
+      }, { once:true });
+      // Reattach next render
+    }
+
+    function renderCards(sorted){
+      cardsWrap.innerHTML = sorted.map(item => {
+        const g = Math.max(0, Math.min(4, Number(item.gpa)||0));
+        const pct = (g/4*100).toFixed(0);
+        return `
+          <div class="card" data-id="${item.id}">
+            <div class="head">
+              <span class="avatar">${item.media?.photo?.dataUrl ? `<img alt="${item.firstName}" src="${item.media.photo.dataUrl}">` : 'ไม่มีรูป'}</span>
+              <div>
+                <div style="font-weight:700;color:#0e264d">${highlight(item.firstName+' '+item.lastName, filter.q)}</div>
+                <div class="meta">${highlight(item.school||'-', filter.q)}</div>
+              </div>
+            </div>
+            <div style="margin:.55rem 0 .4rem" class="gpa-bar"><div class="fill" style="width:${pct}%"></div></div>
+            <div style="display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.4rem">
+              <span class="chip">GPA ${toFixedGPA(item.gpa)}</span>
+              <span class="chip">${highlight(item.major||'-', filter.q)}</span>
+              <span class="chip">${highlight(item.university||'-', filter.q)}</span>
+            </div>
+            <div class="meta">โทร: ${item.phone||'-'}</div>
+            <div class="meta">ส่งเมื่อ: ${timeFmt(item.createdAt)}</div>
+            <div class="actions" style="justify-content:flex-start;margin-top:.55rem">
+              <a class="btn" href="#/detail/${item.id}">รายละเอียด</a>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderAdmin(){
+      const all = Store.load();
+      renderFilterOptions(all);
+      const filtered = withFilter(all);
+      const sorted = withSort(filtered);
+
+      adminSummaryEl.textContent = `รวม ${all.length} รายการ (หลังกรองแสดง ${filtered.length})`;
+      computeStats(filtered);
+
+      if(viewMode === 'table'){
+        tableWrap.style.display = '';
+        cardsWrap.style.display = 'none';
+        renderTable(sorted, filtered);
+      } else {
+        tableWrap.style.display = 'none';
+        cardsWrap.style.display = '';
+        renderCards(sorted);
+      }
+    }
+
+    qsa('th.sortable', tableEl).forEach(th => th.addEventListener('click', () => { setSort(th.dataset.col); renderAdmin(); }));
+
+    document.getElementById('clearBtn').addEventListener('click', () => { if(confirm('ยืนยันการล้างข้อมูลทั้งหมด?')){ Store.clear(); renderAdmin() } });
+
+    document.getElementById('seedBtn').addEventListener('click', async () => {
+      const demo = [
+        {firstName:'ธนพนธ์',lastName:'ศิริชัย',phone:'0812345678',address:'123 หมู่ 4',school:'สวนกุหลาบ',gpa:3.92,major:'วิศวกรรมคอมพิวเตอร์',university:'จุฬาลงกรณ์มหาวิทยาลัย',skills:'เขียนโปรแกรม, ��ข่งขันคอมพิวเตอร์โอลิมปิก',motivation:'อยากพัฒนาเทคโนโลยีเพื่อตอบโจทย์สังคม',media:{}},
+        {firstName:'พิมพ์ชนก',lastName:'วงศ์วาร',phone:'0912345678',address:'99/9 ถ.เจริญนคร',school:'เตรียมอุดมศึกษา',gpa:3.75,major:'วิทยาการข้อมูล',university:'มหาวิทยาลัยธรรมศาสตร์',skills:'วิเคราะห์ข้อมูล, สถิติ',motivation:'สนใจ Data Science',media:{}},
+        {firstName:'อดิศร',lastName:'คงทรัพย์',phone:'0891112222',address:'45/7 ถ.ลาดพร้าว',school:'บดินทรเดชา',gpa:3.58,major:'วิศวกรรมไฟฟ้า',university:'มหาวิทยาลัยเกษตรศาสตร์',skills:'หุ่นยนต์, อิเล็กทรอนิกส์',motivation:'อยากทำงานด้านพลังงาน',media:{}},
+      ];
+      const now = Date.now(); demo.forEach((d,i)=>{ Store.add({ id: uuid(), createdAt: now - i*1000, ...d, media:{ photo:null, activities:[], awards:[], works:[] } }); });
+      renderAdmin();
+    });
+
+    // Toggle view mode
+    const viewToggle = document.getElementById('viewToggle');
+    viewToggle.addEventListener('click', (e) => {
+      const btn = e.target.closest('button[data-mode]'); if(!btn) return;
+      viewMode = btn.dataset.mode; qsa('.btn.toggle', viewToggle).forEach(b=>b.classList.toggle('active', b===btn));
+      renderAdmin();
+    });
+
+    // ------------- Detail View -------------
+    const detailContent = document.getElementById('detailContent');
+    function renderDetail(id){
+      const list = Store.load(); const item = list.find(x => x.id === id);
+      if(!item){ detailContent.innerHTML = '<div class="muted">ไม่พบนักศึกษาที่เลือก</div>'; return }
+
+      detailContent.innerHTML = `
+        <div class="grid grid-2">
+          <div>
+            <div style="display:flex;gap:.9rem;align-items:flex-start">
+              ${item.media?.photo?.dataUrl ? `<span class="thumb" style="width:120px;height:120px"><img alt="${item.firstName}" src="${item.media.photo.dataUrl}"></span>` : `<span class="thumb" style="width:120px;height:120px;display:grid;place-items:center;color:#6a7c99">ไม่มีรูป</span>`}
+              <div>
+                <h3 style="margin:.2rem 0 .1rem; color:#0e264d">${item.firstName} ${item.lastName}</h3>
+                <div class="muted">${item.school || '-'}</div>
+                <div style="margin-top:.45rem"><span class="chip">GPA ${toFixedGPA(item.gpa)}</span></div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="grid">
+              <div><strong>สาขาที่เลือก:</strong> ${item.major || '-'}</div>
+              <div><strong>มหาวิทยาลัย:</strong> ${item.university || '-'}</div>
+              <div><strong>โทร:</strong> ${item.phone || '-'}</div>
+              <div><strong>ที่อยู่:</strong> ${item.address || '-'}</div>
+              <div class="muted"><strong>ส่งเมื่อ:</strong> ${timeFmt(item.createdAt)}</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid" style="margin-top:.6rem">
+          <div class="panel" style="padding:.7rem">
+            <strong>ความสามารถพิเศษ</strong>
+            <div class="muted" style="margin-top:.25rem">${item.skills ? formatNewlines(item.skills) : '-'}</div>
+          </div>
+          <div class="panel" style="padding:.7rem">
+            <strong>เหตุผลในการสมัครเข้าเรียน</strong>
+            <div class="muted" style="margin-top:.25rem">${item.motivation ? formatNewlines(item.motivation) : '-'}</div>
+          </div>
+        </div>
+
+        <div class="grid" style="margin-top:.6rem">
+          <div>
+            <h3 style="margin:.2rem 0 .3rem; color:#0e264d">กิจกรรม</h3>
+            <div class="grid" style="grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap:.6rem">
+              ${(item.media?.activities||[]).map((m,i)=>`<div class="panel" style="padding:.35rem"><img alt="กิจกรรม ${i+1}" src="${m.dataUrl}" style="width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:.35rem"><div class="muted" style="font-size:.85rem;margin-top:.25rem">${m.name||'กิจกรรม'}</div></div>`).join('') || '<div class="muted">- ไม่ได้อัปโหลด -</div>'}
+            </div>
+          </div>
+          <div>
+            <h3 style="margin:.2rem 0 .3rem; color:#0e264d">รางวัล</h3>
+            <div class="grid" style="grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap:.6rem">
+              ${(item.media?.awards||[]).map((m,i)=>`<div class="panel" style="padding:.35rem"><img alt="รางวัล ${i+1}" src="${m.dataUrl}" style="width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:.35rem"><div class="muted" style="font-size:.85rem;margin-top:.25rem">${m.name||'รางวัล'}</div></div>`).join('') || '<div class="muted">- ไม่ได้อัปโหลด -</div>'}
+            </div>
+          </div>
+          <div>
+            <h3 style="margin:.2rem 0 .3rem; color:#0e264d">ผลงาน</h3>
+            <div class="grid" style="grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap:.6rem">
+              ${(item.media?.works||[]).map((m,i)=>`<div class="panel" style="padding:.35rem"><img alt="ผลงาน ${i+1}" src="${m.dataUrl}" style="width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:.35rem"><div class="muted" style="font-size:.85rem;margin-top:.25rem">${m.name||'ผลงาน'}</div></div>`).join('') || '<div class="muted">- ไม่ได้อัปโหลด -</div>'}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // ------------- SPA Router -------------
+    const views = { form: document.getElementById('view-form'), admin: document.getElementById('view-admin'), detail: document.getElementById('view-detail') };
+    function setActiveNav(hash){ const map = { '#/form':'nav-form', '#/admin':'nav-admin' }; qsa('nav a').forEach(a => a.classList.remove('active')); const id = map[hash]; if(id) document.getElementById(id).classList.add('active'); }
+    function showView(key){ Object.values(views).forEach(v => v.hidden = true); views[key].hidden = false; document.scrollingElement?.scrollTo({top:0, behavior:'smooth'}); }
+
+    function attachFilterEvents(){
+      if(!qInput) return;
+      qInput.addEventListener('input', () => { filter.q = qInput.value; renderAdmin() });
+      uniSel.addEventListener('change', () => { filter.uni = uniSel.value; renderAdmin() });
+      majorSel.addEventListener('change', () => { filter.major = majorSel.value; renderAdmin() });
+      gpaMinInput.addEventListener('input', () => { filter.gpaMin = gpaMinInput.value; renderAdmin() });
+      gpaMaxInput.addEventListener('input', () => { filter.gpaMax = gpaMaxInput.value; renderAdmin() });
+      resetFiltersBtn.addEventListener('click', (e) => { e.preventDefault(); qInput.value=''; uniSel.value=''; majorSel.value=''; gpaMinInput.value=''; gpaMaxInput.value=''; Object.assign(filter,{q:'',uni:'',major:'',gpaMin:'',gpaMax:''}); renderAdmin(); });
+    }
+
+    function handleRoute(){
+      const hash = location.hash || '#/form';
+      setActiveNav(hash);
+      if(hash.startsWith('#/admin')){ showView('admin'); renderAdmin(); attachFilterEvents(); }
+      else if(hash.startsWith('#/detail/')){ showView('detail'); const id = hash.split('/')[2]; renderDetail(id); }
+      else { showView('form'); }
+    }
+
+    window.addEventListener('hashchange', handleRoute);
+    window.addEventListener('load', handleRoute);
+  </script>
+</body>
+</html>
