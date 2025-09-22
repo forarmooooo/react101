@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ตัวคำนวณ GPA</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --panel: #111827;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --primary: #2563eb;
+      --danger: #dc2626;
+      --row: #0b1220;
+      --border: #1f2937;
+      --success: #16a34a;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans,
+        Helvetica Neue, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      background: linear-gradient(180deg, #0b1022, #0a0f1f 60%, #0a0e1c);
+      color: var(--text);
+      min-height: 100vh;
+    }
+    .container {
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 24px;
+      background: rgba(17, 24, 39, 0.8);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+      backdrop-filter: blur(6px);
+    }
+    h1 {
+      margin: 0 0 20px 0;
+      font-size: 1.75rem;
+      letter-spacing: 0.2px;
+    }
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 160px 160px;
+      gap: 12px;
+      align-items: end;
+    }
+    @media (max-width: 700px) {
+      .form-row { grid-template-columns: 1fr 1fr; }
+      .form-row .actions { grid-column: 1 / -1; }
+    }
+    label { display: block; margin: 0 0 6px 2px; color: var(--muted); font-size: 0.9rem; }
+    input[type="text"], select {
+      width: 100%;
+      height: 42px;
+      padding: 10px 12px;
+      color: var(--text);
+      background: #0b1220;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      outline: none;
+      transition: border-color .15s ease, box-shadow .15s ease;
+    }
+    input[type="text"]:focus, select:focus {
+      border-color: #334155;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+    button {
+      height: 42px;
+      padding: 0 14px;
+      border: 1px solid transparent;
+      border-radius: 10px;
+      color: #fff;
+      background: #1f2937;
+      cursor: pointer;
+      font-weight: 600;
+      letter-spacing: 0.2px;
+      transition: transform .05s ease, background .15s ease, filter .15s ease, border-color .15s ease;
+    }
+    button:hover { filter: brightness(1.05); }
+    button:active { transform: translateY(1px); }
+    .btn-primary { background: linear-gradient(180deg, #2563eb, #1d4ed8); }
+    .btn-secondary { background: #263247; border-color: #334155; }
+    .btn-danger { background: linear-gradient(180deg, #dc2626, #b91c1c); }
+    .btn-small { height: 34px; padding: 0 10px; font-size: 0.92rem; }
+
+    table { width: 100%; border-collapse: collapse; margin-top: 18px; overflow: hidden; border-radius: 12px; }
+    thead th {
+      text-align: left;
+      background: #10192b;
+      color: #cbd5e1;
+      font-weight: 700;
+      padding: 12px 14px;
+      font-size: 0.95rem;
+      border-bottom: 1px solid var(--border);
+    }
+    tbody td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border);
+      background: #0b1220;
+    }
+    tbody tr:nth-child(odd) td { background: #0c1423; }
+    tbody tr.fail td { color: #f87171; font-weight: 700; }
+    tbody td.grade { width: 120px; font-weight: 700; }
+    tbody td.actions { width: 90px; }
+
+    .gpa-row {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      margin-top: 16px;
+      flex-wrap: wrap;
+    }
+    .gpa-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      height: 42px;
+      padding: 0 14px;
+      background: #0b1220;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-weight: 700;
+    }
+    .hint { color: var(--muted); font-size: 0.9rem; margin-top: 8px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>ตัวคำนวณ GPA</h1>
+
+    <div class="form-row">
+      <div>
+        <label for="courseInput">รายชื่อวิชา</label>
+        <input id="courseInput" type="text" placeholder="เช่น Calculus 1" />
+      </div>
+      <div>
+        <label for="gradeSelect">เกรด</label>
+        <select id="gradeSelect">
+          <option value="A">A</option>
+          <option value="B+">B+</option>
+          <option value="B">B</option>
+          <option value="C+">C+</option>
+          <option value="C">C</option>
+          <option value="D+">D+</option>
+          <option value="D">D</option>
+          <option value="F">F</option>
+          <option value="W">W</option>
+        </select>
+      </div>
+      <div class="actions">
+        <button id="addBtn" class="btn-primary">เพิ่มรายวิชา</button>
+      </div>
+    </div>
+
+    <table aria-label="รายการวิชาและเกรด">
+      <thead>
+        <tr>
+          <th>รายวิชา</th>
+          <th>เกรด</th>
+          <th>จัดการ</th>
+        </tr>
+      </thead>
+      <tbody id="coursesTbody"></tbody>
+    </table>
+
+    <div class="gpa-row">
+      <button id="calcBtn" class="btn-secondary">คำนวณ GPA</button>
+      <div id="gpaResult" class="gpa-badge" aria-live="polite">GPA: 0.00</div>
+    </div>
+    <div class="hint">หมายเหตุ: เกรด W จะไม่ถูกนำไปคำนวณ GPA</div>
+  </div>
+
+  <script>
+    (() => {
+      const courseInput = document.getElementById('courseInput');
+      const gradeSelect = document.getElementById('gradeSelect');
+      const addBtn = document.getElementById('addBtn');
+      const calcBtn = document.getElementById('calcBtn');
+      const tbody = document.getElementById('coursesTbody');
+      const gpaResult = document.getElementById('gpaResult');
+
+      /** @type {{ name: string; grade: keyof typeof gradePoints; }[]} */
+      const courses = [];
+
+      const gradePoints = {
+        'A': 4.0,
+        'B+': 3.5,
+        'B': 3.0,
+        'C+': 2.5,
+        'C': 2.0,
+        'D+': 1.5,
+        'D': 1.0,
+        'F': 0.0,
+        'W': null, // ไม่คิดเกรดใน GPA
+      };
+
+      function escapeHtml(str) {
+        return str.replace(/[&<>"']/g, (ch) => ({
+          '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'
+        })[ch]);
+      }
+
+      function render() {
+        tbody.innerHTML = '';
+        courses.forEach((item, idx) => {
+          const tr = document.createElement('tr');
+          if (item.grade === 'F') tr.classList.add('fail');
+          tr.innerHTML = `
+            <td>${escapeHtml(item.name)}</td>
+            <td class="grade">${item.grade}</td>
+            <td class="actions">
+              <button class="btn-danger btn-small" data-idx="${idx}">ลบ</button>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+
+        tbody.querySelectorAll('button[data-idx]').forEach((btn) => {
+          btn.addEventListener('click', (e) => {
+            const i = Number(e.currentTarget.getAttribute('data-idx'));
+            if (!Number.isNaN(i)) {
+              courses.splice(i, 1);
+              render();
+              updateGpaBadge();
+            }
+          });
+        });
+      }
+
+      function addCourse() {
+        const name = courseInput.value.trim();
+        const grade = gradeSelect.value;
+        if (!name) {
+          courseInput.focus();
+          return;
+        }
+        if (!(grade in gradePoints)) return;
+        courses.push({ name, grade });
+        courseInput.value = '';
+        courseInput.focus();
+        render();
+      }
+
+      function computeGpa() {
+        let sum = 0;
+        let count = 0;
+        for (const c of courses) {
+          const pts = gradePoints[c.grade];
+          if (pts === null) continue; // W ไม่นับ
+          sum += pts;
+          count += 1;
+        }
+        if (count === 0) return 0;
+        return sum / count;
+      }
+
+      function updateGpaBadge() {
+        const gpa = computeGpa();
+        gpaResult.textContent = `GPA: ${gpa.toFixed(2)}`;
+      }
+
+      addBtn.addEventListener('click', (e) => { e.preventDefault(); addCourse(); });
+      calcBtn.addEventListener('click', (e) => { e.preventDefault(); updateGpaBadge(); });
+      courseInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') { e.preventDefault(); addCourse(); }
+      });
+    })();
+  </script>
+</body>
+</html>
